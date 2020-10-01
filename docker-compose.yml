@@ -23,16 +23,23 @@ services:
     
   test-all:
     build:
-      context: "robotframework"
+      context: "respondRobot"
     command: "-v remote_url:hub -v emailAddress:${emailAddress} -v password:${password} --outputdir /out /tests/testcases/"
     volumes:
-      - "./robotframework/tests:/tests:ro"
-      - "./results/all:/out:rw"
+      - "./respondRobot/robotframework/tests:/tests:ro"
+      - "./respondRobot/results/all:/out:rw"
     depends_on:
       - "hub"
       - "chrome"
     networks:
       - "selenium-grid"
+
+  respondio:
+    image: 'loadimpact/k6:latest'
+    mem_limit: 1024m
+    command: "run -e email=${email} -e password=${password} -u 1 -d 1s home/k6/respondLoad/respondLoadLogin.js"
+    volumes:
+        - "./respondLoad:/home/k6/respondLoad"
 
 networks:
   selenium-grid:
